@@ -4,7 +4,7 @@
 		if(!isset($_SESSION['username'])){
 			header('Location: '.ROOT_URL.'/login.php');
 			exit();
-		} 
+		}
 	?>
 				<div class="header-main">
 					<div class="logo-w3-agile">

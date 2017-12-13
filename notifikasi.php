@@ -4,9 +4,6 @@ Author URL: http://w3layouts.com
 License: Creative Commons Attribution 3.0 Unported
 License URL: http://creativecommons.org/licenses/by/3.0/
 -->
-<?php
-	include("config.php");
-?>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -86,13 +83,24 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 								<th>No</th>
 								<th>Tanggal Permintaan</th>
 								<th>Peminta</th>
-								<th colspan="3">Keterangan</th>
+								<th>Keterangan</th>
 							</tr>
 						</thead>
 						<tbody>
+							<?php 
+								$query = mysqli_query($db,"SELECT p.tgl_permintaan, p.keperluan, p.status_permintaan, p.alasan, a.nama, u.nama FROM permintaan as p, anggota as a, unit as u WHERE a.id_anggota = p.id_anggota AND a.id_unit = u.id_unit");
+								$i = 0;
+								while($data = mysqli_fetch_array($query)){
+									$i++;
+									$tgl = date("d-m-Y",strtotime($data[0]));
+							?>
 							<tr>
-								
+								<td><?php echo $i;?></td>
+								<td><?php echo $tgl;?></td>
+								<td><?php echo $data[4]." - ".$data[5];?></td>
+								<td><a href="#">detail permintaan</a></td>
 							</tr>
+							<?php } ?>
 						</tbody>
 					  </table>
 					</div>

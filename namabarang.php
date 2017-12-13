@@ -4,9 +4,6 @@ Author URL: http://w3layouts.com
 License: Creative Commons Attribution 3.0 Unported
 License URL: http://creativecommons.org/licenses/by/3.0/
 -->
-<?php
-	include("config.php");
-?>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -71,40 +68,80 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 	   <div class="mother-grid-inner">
             <!--header start here-->
 				<?php include_once("header.php"); ?>
+				<?php
+					if(!empty($_POST)){
+						if(isset($_POST['tambahNamaBarang'])){
+							if(!empty($_POST['inputjenisbarang2'])){
+								$namaJenisBarang = $_POST['inputjenisbarang2'];
+								$query = mysqli_query($db,"INSERT INTO jenis_barang (nama_jenis_barang) VALUES ('$namaJenisBarang')");
+								if($query){
+									$query = mysqli_query($db,"SELECT LAST_INSERT_ID()");
+									if($query){
+										while($data = mysqli_fetch_array($query)){
+											$jenisBarang = $data[0];
+										}
+									} else { break; }
+								} else { break; }
+							} else {
+								$jenisBarang = $_POST['pilihjenisbarang'];
+							}
+							$namaBarang = $_POST['inputNamaBarang'];
+							$query = mysqli_query($db,"INSERT INTO barang (nama_barang,jns_id) VALUES ('$namaBarang','$jenisBarang')");
+							if($query){
+								echo "<script type=\"text/javascript\">alert('Berhasil menambahkan barang baru');</script>";
+							}
+						}
+					}
+					if(!empty($_GET)){
+						if(isset($_GET['delete'])){
+							$id_barang = $_GET['id'];
+							$query = mysqli_query($db,"DELETE FROM barang WHERE id_barang = '$id_barang'");
+							if($query){
+								echo "<script type=\"text/javascript\">alert('Berhasil menghapus barang');</script>";
+								echo "<script type=\"text/javascript\">window.location ='".ROOT_URL."/namabarang.php';</script>";
+							}
+						}
+					}
+				?>
 <!--heder end here-->
 <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="index.html">Home</a><i class="fa fa-angle-right"></i>Nama Barang</li>
             </ol>
 <div class="grid-form1">
 	<h3 id="forms-horizontal">Form Tambah Nama Barang</h3>
-	<form class="form-horizontal">
+	<form class="form-horizontal" action="" method="post">
+		<input type="hidden" name="tambahNamaBarang" value="submit" />
 		<div class="form-group">
 			<label for="pilihjenisbarang" class="col-sm-2 control-label">Jenis Barang</label>
-			<div class="col-sm-8"><select name="selector1" id="pilihjenisbarang" class="form-control1">
-				<option>--pilih jenis barang--</option>
-				<option>Jenis Barang 1</option>
-				<option>Jenis Barang 2</option>
-				<option>Jenis Barang 3</option>
+			<div class="col-sm-8"><select name="pilihjenisbarang" id="pilihjenisbarang" class="form-control1">
+				<?php
+					$query = mysqli_query($db,"SELECT * FROM jenis_barang");
+					while($data = mysqli_fetch_array($query)){
+				?>
+					<option value="<?php echo $data[0];?>"><?php echo $data[1];?></option>
+				<?php
+					}
+				?>
 			</select></div>
 		</div>
 		<div class="form-group">
-			<label for="inputEmail3" class="col-sm-2 control-label hor-form">Jika tidak ada di list</label>
+			<label for="inputjenisbarang2" class="col-sm-2 control-label hor-form">Jika tidak ada di list</label>
 			<div class="col-sm-5">
-				<input type="text" class="form-control" id="inputjenisbarang2" placeholder="">
+				<input type="text" class="form-control" name="inputjenisbarang2" id="inputjenisbarang2" placeholder="">
 			</div>
 		</div>
 		<div class="form-group">
-			<label for="inputEmail3" class="col-sm-2 control-label hor-form">Nama Barang</label>
+			<label for="inputNamaBarang" class="col-sm-2 control-label hor-form">Nama Barang</label>
 			<div class="col-sm-5">
-				<input type="text" class="form-control" id="inputNamaBarang" placeholder="">
+				<input type="text" class="form-control" name="inputNamaBarang" id="inputNamaBarang" placeholder="">
 			</div>
 		</div>
 		<div class="panel-footer">
 			<div class="row">
 				<div class="col-sm-8 col-sm-offset-2">
-					<button class="btn-primary btn">Submit</button>
+					<button class="btn-primary btn" type="Submit">Submit</button>
 					<button class="btn-default btn">Cancel</button>
-					<button class="btn-inverse btn">Reset</button>
+					<button class="btn-inverse btn" type="Reset">Reset</button>
 				</div>
 			</div>
 		</div>
@@ -126,7 +163,26 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 						</thead>
 						<tbody>
 							<tr>
-								
+								<?php
+								$query = mysqli_query($db, "select * from barang");
+								if ($query === FALSE) {
+									die(mysql_error());	
+								}
+				 
+							   $no = 1;
+							   while ($data = mysqli_fetch_array($query))
+								{
+							?>
+								<tr style="font-size:12">
+										<td><?php echo $no; ?></td>
+										<td><?php echo $data['nama_barang']; ?></td>
+										<td><a href="#">Edit</a></td>
+										<td><a href="?delete=1&id=<?php echo $data['id_barang']; ?>">Delete</a></td>
+								</tr>
+								<?php
+									$no++;
+								}
+								?>
 							</tr>
 						</tbody>
 					  </table>
