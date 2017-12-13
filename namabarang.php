@@ -80,8 +80,8 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 										while($data = mysqli_fetch_array($query)){
 											$jenisBarang = $data[0];
 										}
-									} else { break; }
-								} else { break; }
+									}
+								}
 							} else {
 								$jenisBarang = $_POST['pilihjenisbarang'];
 							}
