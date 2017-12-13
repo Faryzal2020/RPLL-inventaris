@@ -88,7 +88,26 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 						</thead>
 						<tbody>
 							<tr>
-								
+								<?php
+								$query = mysqli_query($db, "select * from barang");
+								if ($query === FALSE) {
+									die(mysql_error());	
+								}
+				 
+							   $no = 1;
+							   while ($data = mysqli_fetch_array($query))
+								{
+							?>
+								<tr style="font-size:12">
+										<td><?php echo $no; ?></td>
+										<td><?php echo $data['id_barang']; ?></td>
+										<td><?php echo $data['nama_barang']; ?></td>
+										<td><?php echo $data['jns_id']; ?></td>
+								</tr>
+								<?php
+									$no++;
+								}
+								?>
 							</tr>
 						</tbody>
 					  </table>

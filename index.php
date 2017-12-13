@@ -60,7 +60,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 									<th scope="row">1</th>
 									<td>Stok Barang</td>
                                     <td>Sissy</td>
-									<td><span class="label label-warning">In progress</span></td>
+									<td><span class="label label-success">Completed</span></td>
 								</tr>
                                 <tr>
                                     <th scope="row">2</th>
