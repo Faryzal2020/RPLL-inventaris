@@ -89,6 +89,30 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 							$query = mysqli_query($db,"INSERT INTO barang (nama_barang,jns_id) VALUES ('$namaBarang','$jenisBarang')");
 							if($query){
 								echo "<script type=\"text/javascript\">alert('Berhasil menambahkan barang baru');</script>";
+								echo "<script type=\"text/javascript\">window.location ='".ROOT_URL."/namabarang.php';</script>";
+							}
+						}
+						if(isset($_POST['editNamaBarang'])){
+							if(!empty($_POST['editinputjenisbarang2'])){
+								$namaJenisBarang = $_POST['editinputjenisbarang2'];
+								$query = mysqli_query($db,"INSERT INTO jenis_barang (nama_jenis_barang) VALUES ('$namaJenisBarang')");
+								if($query){
+									$query = mysqli_query($db,"SELECT LAST_INSERT_ID()");
+									if($query){
+										while($data = mysqli_fetch_array($query)){
+											$jenisBarang = $data[0];
+										}
+									}
+								}
+							} else {
+								$jenisBarang = $_POST['editpilihjenisbarang'];
+							}
+							$namaBarang = $_POST['editinputNamaBarang'];
+							$idBarang = $_POST['editNamaBarang'];
+							$query = mysqli_query($db,"UPDATE barang SET nama_barang = '$namaBarang', jns_id = '$jenisBarang' WHERE id_barang = '$idBarang'");
+							if($query){
+								echo "<script type=\"text/javascript\">alert('Berhasil mengedit barang');</script>";
+								echo "<script type=\"text/javascript\">window.location ='".ROOT_URL."/namabarang.php';</script>";
 							}
 						}
 					}
@@ -97,7 +121,6 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 							$id_barang = $_GET['id'];
 							$query = mysqli_query($db,"DELETE FROM barang WHERE id_barang = '$id_barang'");
 							if($query){
-								echo "<script type=\"text/javascript\">alert('Berhasil menghapus barang');</script>";
 								echo "<script type=\"text/javascript\">window.location ='".ROOT_URL."/namabarang.php';</script>";
 							}
 						}
@@ -170,14 +193,16 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 								}
 				 
 							   $no = 1;
-							   while ($data = mysqli_fetch_array($query))
-								{
+							   while ($data = mysqli_fetch_array($query)){
+							   		$namaBarang = $data['nama_barang'];
+							   		$idJenis = $data['jns_id'];
+							   		$idbarang = $data['id_barang'];
 							?>
 								<tr style="font-size:12">
 										<td><?php echo $no; ?></td>
-										<td><?php echo $data['nama_barang']; ?></td>
-										<td><a href="#">Edit</a></td>
-										<td><a href="?delete=1&id=<?php echo $data['id_barang']; ?>">Delete</a></td>
+										<td><?php echo $namaBarang; ?></td>
+										<td><a style="cursor: pointer;" data-toggle="modal" data-target="#editNamaBarang" onclick="edit('<?php echo $namaBarang; ?>','<?php echo $idJenis; ?>','<?php echo $idbarang; ?>')">Edit</a></td>
+										<td><a href="?delete=1&id=<?php echo $idbarang; ?>">Delete</a></td>
 								</tr>
 								<?php
 									$no++;
@@ -190,6 +215,59 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 				</div>
 				<!-- //tables -->
 			</div>
+	<div id="editNamaBarang" class="modal fade" role="dialog">
+  		<div class="modal-dialog">
+    		<div class="modal-content">
+      			<div class="modal-header">
+        			<button type="button" class="close" data-dismiss="modal">&times;</button>
+        			<h4 class="modal-title">Edit Nama Barang</h4>
+      			</div>
+      			<div class="modal-body">
+        			<div class="grid-form1">
+						<form class="form-horizontal" action="" method="post">
+							<input type="hidden" name="editNamaBarang" id="editIdBarang" value="" />
+							<div class="form-group">
+								<label for="editpilihjenisbarang" class="col-sm-4 control-label">Jenis Barang</label>
+								<div class="col-sm-7"><select name="editpilihjenisbarang" id="editpilihjenisbarang" class="form-control1">
+									<?php
+										$query = mysqli_query($db,"SELECT * FROM jenis_barang");
+										while($data = mysqli_fetch_array($query)){
+									?>
+										<option value="<?php echo $data[0];?>"><?php echo $data[1];?></option>
+									<?php
+										}
+									?>
+								</select></div>
+							</div>
+							<div class="form-group">
+								<label for="editinputjenisbarang2" class="col-sm-4 control-label hor-form">Jika tidak ada di list</label>
+								<div class="col-sm-7">
+									<input type="text" class="form-control" name="editinputjenisbarang2" id="editinputjenisbarang2" placeholder="">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="editinputNamaBarang" class="col-sm-4 control-label hor-form">Nama Barang</label>
+								<div class="col-sm-7">
+									<input type="text" class="form-control" name="editinputNamaBarang" id="editinputNamaBarang" placeholder="">
+								</div>
+							</div>
+							<div class="panel-footer">
+								<div class="row">
+									<div class="col-sm-8 col-sm-offset-4">
+										<button class="btn-primary btn" type="Submit">Submit</button>
+										<button class="btn-inverse btn" type="Reset">Reset</button>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+      			</div>
+      			<div class="modal-footer">
+        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      			</div>
+    		</div>
+  		</div>
+	</div>
 <!-- script-for sticky-nav -->
 		<script>
 		$(document).ready(function() {
@@ -204,6 +282,11 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 			 });
 			 
 		});
+		function edit(nama,idjenis, idbarang){
+			document.getElementById("editpilihjenisbarang").value = idjenis;
+			document.getElementById("editinputNamaBarang").value = nama;
+			document.getElementById("editIdBarang").value = idbarang;
+		}
 		</script>
 		<!-- /script-for sticky-nav -->
 <!--inner block start here-->

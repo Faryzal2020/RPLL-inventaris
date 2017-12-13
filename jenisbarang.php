@@ -4,9 +4,9 @@ Author URL: http://w3layouts.com
 License: Creative Commons Attribution 3.0 Unported
 License URL: http://creativecommons.org/licenses/by/3.0/
 -->
-<?php
+<!--?php
 	include("config.php");
-?>
+?-->
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -71,25 +71,57 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 	   <div class="mother-grid-inner">
             <!--header start here-->
 				<?php include_once("header.php"); ?>
+				<?php
+					if(!empty($_POST)){
+						if(isset($_POST['tambahJenisBarang'])){
+							$namaJenisBarang = $_POST['inputJenisBarang'];
+							$query = mysqli_query($db,"INSERT INTO jenis_barang (nama_jenis_barang) VALUES ('$namaJenisBarang')");
+							if($query){
+								echo "<script type=\"text/javascript\">alert('Berhasil menambahkan jenis barang baru');</script>";
+								echo "<script type=\"text/javascript\">window.location ='".ROOT_URL."/jenisbarang.php';</script>";
+							}
+						}
+						if(isset($_POST['editJenisBarang'])){
+							$namaJenisBarang = $_POST['editinputJenisBarang'];
+							$idJenisBarang = $_POST['editJenisBarang'];
+							$query = mysqli_query($db,"UPDATE jenis_barang SET nama_jenis_barang = '$namaJenisBarang' WHERE id_jns_barang = '$idJenisBarang'");
+							if($query){
+								echo "<script type=\"text/javascript\">alert('Berhasil mengedit jenis barang');</script>";
+								echo "<script type=\"text/javascript\">window.location ='".ROOT_URL."/jenisbarang.php';</script>";
+							}
+						}
+					}
+					if(!empty($_GET)){
+						if(isset($_GET['delete'])){
+							$id_barang = $_GET['id'];
+							$query = mysqli_query($db,"DELETE FROM jenis_barang WHERE id_jns_barang = '$id_barang'");
+							if($query){
+								echo "<script type=\"text/javascript\">window.location ='".ROOT_URL."/jenisbarang.php';</script>";
+							}
+						}
+					}
+				?>
 <!--heder end here-->
 <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="index.html">Home</a><i class="fa fa-angle-right"></i>Jenis Barang</li>
             </ol>
 <div class="grid-form1">
 	<h3 id="forms-horizontal">Form Tambah Jenis Barang</h3>
-	<form class="form-horizontal">
-		<div class="form-group">
-			<label for="inputEmail3" class="col-sm-2 control-label hor-form">Nama Barang</label>
+	<form class="form-horizontal" action="" method="post">
+		<input type="hidden" name="tambahJenisBarang" value="submit" />
+		<div class="form-group" >
+			<label for="inputJenisBarang" class="col-sm-2 control-label hor-form">Nama Barang</label>
 			<div class="col-sm-5">
-				<input type="text" class="form-control" id="inputNamaBarang" placeholder="">
+				<input type="text" class="form-control" name="inputJenisBarang" id="inputJenisBarang" placeholder="">
 			</div>
 		</div>
 		<div class="panel-footer">
 			<div class="row">
 				<div class="col-sm-8 col-sm-offset-2">
-					<button class="btn-primary btn">Submit</button>
+					<button class="btn-primary btn" type="Submit">Submit</button>
 					<button class="btn-default btn">Cancel</button>
-					<button class="btn-inverse btn">Reset</button>
+					<button class="btn-inverse btn" type="Reset">Reset
+					</button>
 				</div>
 			</div>
 		</div>
@@ -111,6 +143,27 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 						</thead>
 						<tbody>
 							<tr>
+								<?php
+								$query = mysqli_query($db, "select * from jenis_barang");
+								if ($query === FALSE) {
+									die(mysql_error());	
+								}
+				 
+							   $no = 1;
+							   while ($data = mysqli_fetch_array($query)){
+							   		$namaJenisBarang = $data['nama_jenis_barang'];
+							   		$idJenisBarang = $data['id_jns_barang'];
+							?>
+								<tr style="font-size:12">
+										<td><?php echo $no; ?></td>
+										<td><?php echo $namaJenisBarang; ?></td>
+										<td><a style="cursor: pointer;" data-toggle="modal" data-target="#editJenisBarang" onclick="edit('<?php echo $namaJenisBarang; ?>','<?php echo $idJenisBarang; ?>')">Edit</a></td>
+										<td><a href="?delete=1&id=<?php echo $idJenisBarang; ?>">Delete</a></td>
+								</tr>
+								<?php
+									$no++;
+								}
+								?>
 								
 							</tr>
 						</tbody>
@@ -119,6 +172,41 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 				</div>
 				<!-- //tables -->
 			</div>
+	<div id="editJenisBarang" class="modal fade" role="dialog">
+  		<div class="modal-dialog">
+    		<div class="modal-content">
+      			<div class="modal-header">
+        			<button type="button" class="close" data-dismiss="modal">&times;</button>
+        			<h4 class="modal-title">Edit Jenis Barang</h4>
+      			</div>
+      			<div class="modal-body">
+        			<div class="grid-form1">
+						<form class="form-horizontal" action="" method="post">
+							<input type="hidden" name="editJenisBarang" id="idJenisBarang" value="" />
+							<div class="form-group" >
+								<label for="editinputJenisBarang" class="col-sm-4 control-label hor-form">Nama Barang</label>
+								<div class="col-sm-7">
+									<input type="text" class="form-control" name="editinputJenisBarang" id="editinputJenisBarang" placeholder="">
+								</div>
+							</div>
+							<div class="panel-footer">
+								<div class="row">
+									<div class="col-sm-8 col-sm-offset-4">
+										<button class="btn-primary btn" type="Submit">Submit</button>
+										<button class="btn-inverse btn" type="Reset">Reset
+										</button>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+      			</div>
+      			<div class="modal-footer">
+        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      			</div>
+    		</div>
+  		</div>
+	</div>
 <!-- script-for sticky-nav -->
 		<script>
 		$(document).ready(function() {
@@ -131,8 +219,11 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 					$(".header-main").removeClass("fixed");
 				}
 			 });
-			 
 		});
+		function edit(nama,idjenis){
+			document.getElementById("idJenisBarang").value = idjenis;
+			document.getElementById("editinputJenisBarang").value = nama;
+		}
 		</script>
 		<!-- /script-for sticky-nav -->
 <!--inner block start here-->
